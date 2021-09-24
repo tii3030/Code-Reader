@@ -1,6 +1,10 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.barcodereader">
-   <application
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.example.barcodereader">
+  
+  <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
+  <uses-permission android:name="android.permission.INTERNET"/>
+  <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
+  
+  <application
         android:label="barcodereader"
         android:icon="@mipmap/ic_launcher">
         <activity
