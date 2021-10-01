@@ -371,10 +371,12 @@ class Home extends StatelessWidget {
                     height: 75.0,
 
                     child: FloatingActionButton(
-                      onPressed: () => showDialog<String>(
+                      onPressed: () => 
+                      
+                      showDialog<String>(
                         context: context,
                         builder: (BuildContext context) => AlertDialog(
-
+                          scrollable: true,
                           insetPadding: const EdgeInsets.symmetric(
                             horizontal: 20.0,
                             vertical: 150.0,
@@ -383,7 +385,9 @@ class Home extends StatelessWidget {
                           content:
 
                           Column(
-                            mainAxisSize: MainAxisSize.min,
+
+                            //mainAxisSize: MainAxisSize.min,
+
                             children: [
 
                               Container(
@@ -510,67 +514,71 @@ class Home extends StatelessWidget {
                                   
                                 ),
                               ),
+
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {},
+
+                                    child:
+                                          
+                                    Container(
+                                      alignment: Alignment.center,
+                                      margin: const EdgeInsets.only(top: 20, bottom: 10, right: 10),
+                                      //padding: const EdgeInsets.only(left: 20, right: 20),
+
+                                      height: 40,
+                                      width: 80,
+
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFF0059FF),                                                    
+                                        borderRadius: BorderRadius.circular(10.0),
+
+                                      ),
+
+                                      child:
+
+                                      const Text(
+                                        "Cancelar",
+                                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                  ),
+
+                                  GestureDetector(
+                                    onTap: () {},
+
+                                    child:
+
+                                    Container(
+                                      alignment: Alignment.center,
+                                      margin: const EdgeInsets.only(top: 20, bottom: 10),
+                                      //padding: const EdgeInsets.only(left: 20, right: 20),
+
+                                      height: 40,
+                                      width: 80,
+
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFF0059FF),                                                    
+                                        borderRadius: BorderRadius.circular(10.0),
+
+                                      ),
+
+                                      child:
+                                            
+                                      const Text(
+                                        "Adicionar",
+                                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                  ),
+
+                                ]
+                              )
                             ],
                           ),
-                            
-                          actions: <Widget>[
-
-                            GestureDetector(
-                              onTap: () {},
-
-                              child:
-                                    
-                              Container(
-                                alignment: Alignment.center,
-                                margin: const EdgeInsets.only(bottom: 20, right: 10),
-                                //padding: const EdgeInsets.only(left: 20, right: 20),
-                                
-                                height: 40,
-                                width: 80,
-
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF0059FF),                                                    
-                                  borderRadius: BorderRadius.circular(10.0),
-
-                                ),
-
-                                child:
-                                      
-                                const Text(
-                                  "Cancelar",
-                                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                            ),
-
-                             GestureDetector(
-                              onTap: () {},
-
-                              child:
-                                    
-                              Container(
-                                alignment: Alignment.center,
-                                margin: const EdgeInsets.only(bottom: 20, right: 20),
-                                //padding: const EdgeInsets.only(left: 20, right: 20),
-                                
-                                height: 40,
-                                width: 80,
-
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF0059FF),                                                    
-                                  borderRadius: BorderRadius.circular(10.0),
-
-                                ),
-
-                                child:
-                                      
-                                const Text(
-                                  "Adicionar",
-                                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                            ),
-                          ],
                         ),
                       ),
                       

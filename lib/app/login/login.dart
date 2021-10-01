@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 //import 'package:local_auth/local_auth.dart';
+import 'requests.dart';
 
 class FormLogin extends StatelessWidget {
 
@@ -8,6 +9,16 @@ class FormLogin extends StatelessWidget {
 
 	@override
 	Widget build(BuildContext context) {
+
+    final myController = TextEditingController();
+    final myControllerPass = TextEditingController();
+
+    @override
+    void dispose() {
+      // Clean up the controller when the widget is disposed.
+      myController.dispose();
+      dispose();
+    }
     
 		return Scaffold(
 
@@ -96,10 +107,12 @@ class FormLogin extends StatelessWidget {
 
                   child: 
                         
-                  const TextField(
-                    obscureText: true,
+                  TextFormField(
 
-                    decoration: InputDecoration(
+                    //CONTROLER CODE USER
+                    controller: myController,
+                    obscureText: true,
+                    decoration: const InputDecoration(
                       icon: Icon(
                         Icons.email,
                         color: Colors.grey,
@@ -126,9 +139,12 @@ class FormLogin extends StatelessWidget {
 
                   child:
                         
-                  const TextField(
+                  TextFormField(
+
+                    //CONTROLER CODE USER
+                    controller: myControllerPass,
                     obscureText: true,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                             
                       icon: Icon(
                         Icons.vpn_key,
@@ -143,7 +159,12 @@ class FormLogin extends StatelessWidget {
                 ),
 
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+
+                    LoginApi loginApi = new LoginApi();
+                    loginApi.loginApi();
+
+                  },
 
                   child:
                         

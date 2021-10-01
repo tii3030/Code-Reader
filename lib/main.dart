@@ -6,7 +6,7 @@ void main() {
 	runApp(
 		const MaterialApp(
 				title: 'Flutter Tutorial',
-				home: Home(),
+				home: FormLogin(),
 		),
 	);
 }
