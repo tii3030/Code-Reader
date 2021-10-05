@@ -1,24 +1,67 @@
+import 'package:barcodereader/app/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 //import 'package:local_auth/local_auth.dart';
 import 'requests.dart';
 
+/// This is the main application widget.
 class FormLogin extends StatelessWidget {
+  const FormLogin({Key? key}) : super(key: key);
 
-	const FormLogin({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      home: MyStatefulWidget(),
+    );
+  }
+}
+
+/// This is the stateful widget that the main application instantiates.
+class MyStatefulWidget extends StatefulWidget {
+  const MyStatefulWidget({Key? key}) : super(key: key);
+
+  @override
+  State<MyStatefulWidget> createState() => _MyStatefulWidgetState();
+}
+
+class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProviderStateMixin {
+
+  final myController = TextEditingController();
+  final myControllerPass = TextEditingController();
+  bool load = false;
+  late AnimationController controller;
+  bool isValidEmail = false;
+  bool isValidPass = false;
+
+  void _handleLoad(bool _load) {
+    setState(() {
+      load = _load;
+    });
+  }
+
+  void _handleEmailValid(bool _email) {
+    setState(() {
+      isValidEmail = _email;
+    });
+  }
+
+  void _handlePassValid(bool _pass) {
+    setState(() {
+      isValidPass = _pass;
+    });
+  }
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    myController.dispose();
+    myControllerPass.dispose();
+
+    dispose();
+  }
 
 	@override
 	Widget build(BuildContext context) {
-
-    final myController = TextEditingController();
-    final myControllerPass = TextEditingController();
-
-    @override
-    void dispose() {
-      // Clean up the controller when the widget is disposed.
-      myController.dispose();
-      dispose();
-    }
     
 		return Scaffold(
 
@@ -84,8 +127,8 @@ class FormLogin extends StatelessWidget {
 
                 Container(
                   margin: const EdgeInsets.only(bottom: 70),
-                  child: Image.asset("assets/images/img_marca.png"),
-                  height: 120,
+                  child: Image.asset("assets/images/12.png"),
+                  height: 140,
                   width: MediaQuery.of(context).copyWith().size.width,
 
                   decoration: BoxDecoration(
@@ -93,67 +136,82 @@ class FormLogin extends StatelessWidget {
                     border: Border.all(style: BorderStyle.none),
                   ),
                 ),
-                      
+
                 Container(
-                  padding: const EdgeInsets.only(left: 12.0),
-                  margin:  const EdgeInsets.all(10.0),
-                  height: 50,
+                  padding: const EdgeInsets.only(left: 10, right: 10),
+                  //height: 55,
+                  child:
 
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15.0),
-                    color: Colors.white,
-                    border: Border.all(width: 1.0, color: const Color(0xFFDBDBDB)),
-                  ),
-
-                  child: 
-                        
                   TextFormField(
+
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter some text';
+                      }
+                      return null;
+                    },
 
                     //CONTROLER CODE USER
                     controller: myController,
-                    obscureText: true,
-                    decoration: const InputDecoration(
-                      icon: Icon(
+                    obscureText: false,
+
+                    decoration: InputDecoration(
+
+                      errorText: isValidEmail ? 'Email inválido' : null,
+
+                      prefixIcon: const Icon(
                         Icons.email,
-                        color: Colors.grey,
+                        color: Color(0xFFD7D9D9),
+
                       ),
-                              
-                      hintText: "Código",
-                      //REMOVE A BORDA E O EFEITO DE FOCO
-                      enabledBorder: InputBorder.none,
-                      focusedBorder: InputBorder.none
+
+                      labelText: 'Código',
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(width: 1, color: Color(0xFFD7D9D9),),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(width: 2, color: Color(0xFF00049F)),
+                        borderRadius: BorderRadius.circular(15),
+                      )
                     ),
                   ),
-                ),
+                ),  
+
+                const SizedBox(height: 16,),
 
                 Container(
-                  padding: const EdgeInsets.only(left: 12.0),
-                  margin:  const EdgeInsets.all(10.0),
-                  height: 50,
-
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15.0),
-                    color: Colors.white,
-                    border: Border.all(width: 1.0, color: const Color(0xFFDBDBDB)),
-                  ),
+                  padding: const EdgeInsets.only(left: 10, right: 10),
+                  //height: 55,
 
                   child:
-                        
+                  
                   TextFormField(
-
-                    //CONTROLER CODE USER
+                    
+                    //CONTROLER PASS USER
                     controller: myControllerPass,
-                    obscureText: true,
-                    decoration: const InputDecoration(
-                            
-                      icon: Icon(
+                    obscureText: false,
+
+                    decoration: InputDecoration(
+
+                      errorText: isValidPass ? 'Senha inválida' : null,
+
+                      prefixIcon: const Icon(
                         Icons.vpn_key,
-                        color: Colors.grey,
+                        color: Color(0xFFD7D9D9),
                       ),
 
-                      hintText: "Senha",
-                      enabledBorder: InputBorder.none,
-                      focusedBorder: InputBorder.none
+                      labelText: 'Senha',
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(width: 1, color: Color(0xFFD7D9D9)),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(width: 2, color: Color(0xFF00049F)),
+                        borderRadius: BorderRadius.circular(15),
+                      )
                     ),
                   ),
                 ),
@@ -161,9 +219,40 @@ class FormLogin extends StatelessWidget {
                 GestureDetector(
                   onTap: () {
 
-                    LoginApi loginApi = new LoginApi();
-                    loginApi.loginApi();
+                    if((myController.text).isEmpty) {
+                      _handleEmailValid(true);
+                    }
 
+                    if((myControllerPass.text).isEmpty) {
+                      _handlePassValid(true);
+                    }
+                    
+                    if(((myController.text).isNotEmpty) && ((myControllerPass.text).isNotEmpty)) {
+                      
+                      _handleLoad(true);
+
+                      LoginApi loginApi = LoginApi(myController.text, myControllerPass.text);
+                      loginApi.loginApi().then((authenticated) => {
+                        
+                        if(authenticated == true) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const Home(),
+                            ),
+                          ),
+
+                          _handleLoad(false),
+
+                        } else {
+                          _handleLoad(false),
+                          _handleEmailValid(true),
+                          _handlePassValid(true),
+                        }
+
+                      });
+                    }
+                    
                   },
 
                   child:
@@ -183,17 +272,45 @@ class FormLogin extends StatelessWidget {
                               
                         begin: Alignment.centerLeft, end: Alignment.centerRight
                       ),
+
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.grey,
+                          offset: Offset(0.0, 1.0), //(x,y)
+                          blurRadius: 6.0,
+                        ),
+                      ],
                                         
                       borderRadius: BorderRadius.circular(15.0),
-
                     ),
 
                     child:
+
+                    Column(
+
+                      mainAxisAlignment: MainAxisAlignment.center,
+
+                      children: <Widget>[
+
+                        load ?
+
+                        const CircularProgressIndicator(
+                          color: Colors.white,
+                          //value: controller.value,
+                          valueColor: AlwaysStoppedAnimation(Colors.white),
+                          strokeWidth: 3.0
+                        )
+
+                        :
+
+                        const Text(
+                          "LOGIN",
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    )
                           
-                    const Text(
-                      "LOGIN",
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                    ),
+
                   ),
                 ),
 

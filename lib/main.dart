@@ -4,9 +4,14 @@ import 'app/home/home.dart';
 
 void main() {
 	runApp(
-		const MaterialApp(
+		MaterialApp(
 				title: 'Flutter Tutorial',
 				home: FormLogin(),
+        debugShowCheckedModeBanner: false,
+        routes: {
+          '/login': (context) => FormLogin(),
+          '/home': (context) => Home(),
+        }
 		),
 	);
 }
