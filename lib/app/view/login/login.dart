@@ -1,8 +1,8 @@
-import 'package:barcodereader/app/home/home.dart';
+import 'package:barcodereader/app/view/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 //import 'package:local_auth/local_auth.dart';
-import 'requests.dart';
+import '../../requests/request_login.dart';
 
 /// This is the main application widget.
 class FormLogin extends StatelessWidget {
@@ -310,7 +310,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProvider
                       ],
                     )
                           
-
                   ),
                 ),
 

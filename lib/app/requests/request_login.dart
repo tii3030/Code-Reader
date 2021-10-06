@@ -16,7 +16,7 @@ class LoginApi {
     bool authenticated = false;
 
     var formData = jsonEncode({
-      "keyApi" : "@CAzkEsidif5KbQk3LnNx#mJYZL^G7",
+      "keyApi" : "tu3RFoE9aUKoTx@OqgzgsZeBU1k=ty",
       "codigo" : _codigo,
       "senha" : _pass,
     });
@@ -24,7 +24,7 @@ class LoginApi {
     try {
 
       final response = await Dio().post(
-        "https://bi.eletrosom.com/api/authentication/",
+        "https://bi.eletrosom.com/api_codeReader/authentication/",
         data: formData,
         options: Options(
           contentType: Headers.jsonContentType,

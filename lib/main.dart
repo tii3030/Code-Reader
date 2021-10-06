@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'app/login/login.dart';
-import 'app/home/home.dart';
+import 'app/view/login/login.dart';
+import 'app/view/home/home.dart';
 
 void main() {
 	runApp(
 		MaterialApp(
 				title: 'Flutter Tutorial',
-				home: FormLogin(),
+				home: const FormLogin(),
         debugShowCheckedModeBanner: false,
         routes: {
-          '/login': (context) => FormLogin(),
-          '/home': (context) => Home(),
+          '/login': (context) => const FormLogin(),
+          '/home': (context) => const Home(),
         }
 		),
 	);

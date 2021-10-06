@@ -1,14 +1,144 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-//import 'package:local_auth/local_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:barcodereader/app/login/login.dart';
 import 'package:qrscan/qrscan.dart' as scanner;
+//import '../../model/scan_qr_bar.dart';
 
+/// This is the main application widget.
 class Home extends StatelessWidget {
-	const Home({Key? key}) : super(key: key);
+  const Home({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      home: MyStatefulWidget(),
+    );
+  }
+}
+
+/// This is the stateful widget that the main application instantiates.
+class MyStatefulWidget extends StatefulWidget {
+  const MyStatefulWidget({Key? key}) : super(key: key);
+
+  @override
+  State<MyStatefulWidget> createState() => _MyStatefulWidgetState();
+}
+
+class _MyStatefulWidgetState extends State<MyStatefulWidget> {
+   
+  Future _scanQR() async {
+    //await Permission.camera.request();
+    var barcode = await scanner.scan();
+    if (barcode == null) {
+      //
+    } else {
+
+      showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          scrollable: true,
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 20.0,
+            vertical: 150.0,
+          ),
+            
+          //title: const Text('NOVA CONTAGEM'),
+          content:
+
+          Column(
+
+          //mainAxisSize: MainAxisSize.min,
+
+            children: [
+
+              Container(
+
+                margin: const EdgeInsets.only(top: 20, bottom: 20),
+                width: MediaQuery.of(context).size.width,
+                  decoration: const BoxDecoration(
+                    //color: Color(0xFFEDEDED)
+                  ),
+
+                child:
+
+                const Text(
+                  "Verifique o código abaixo:",
+                  style: TextStyle(
+                    color: Colors.black45,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold
+                  ),
+                ) 
+              ),
+
+              Container(
+
+                margin: const EdgeInsets.only(top: 20, bottom: 20),
+                width: MediaQuery.of(context).size.width,
+                  decoration: const BoxDecoration(
+                    //color: Color(0xFFEDEDED)
+                  ),
+
+                child:
+
+                Text(
+                  barcode,
+                  style: const TextStyle(
+                    color: Colors.black45,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold
+                  ),
+                )
+              ),
+
+              Align(
+              alignment: Alignment.bottomRight,
+
+              child: 
+              
+                GestureDetector(
+                  onTap: () {},
+
+                  child:
+
+                  Container(
+                    alignment: Alignment.center,
+                    margin: const EdgeInsets.only(top: 20, bottom: 10),
+                    //padding: const EdgeInsets.only(left: 20, right: 20),
+
+                    height: 45,
+                    width: 95,
+
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF00049F),                                                    
+                      borderRadius: BorderRadius.circular(10.0),
+
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.grey,
+                          offset: Offset(0.0, 1.0), //(x,y)
+                          blurRadius: 6.0,
+                        ),
+                      ],
+                    ),
+
+                    child:
+                                              
+                    const Text(
+                      "Adicionar",
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+      );
+    }
+  }
 
 	@override
 	Widget build(BuildContext context) {
@@ -16,7 +146,6 @@ class Home extends StatelessWidget {
     //Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)=>FormLogin()),(Route<dynamic> route) => false);
 
     final List<String> items = List<String>.generate(10, (i) => 'Item $i');
-    String camera;
 
     List <Widget> carousselItens = <Widget>[
       Text(
@@ -139,163 +268,157 @@ class Home extends StatelessWidget {
 
                   child: 
 
-                  Container(
-                    //margin: const EdgeInsets.only(top: 30),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      
+                      Column(
+                      
+                        children: [
 
-                    child: 
-                  
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        
-                        Column(
-                        
-                          children: [
+                          Container(
 
-                            Container(
+                            height: 50,
+                            width: 150, 
+                            padding: const EdgeInsets.all(5),
 
-                              height: 50,
-                              width: 150, 
-                              padding: const EdgeInsets.all(5),
-
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF00049F),
-                                borderRadius: BorderRadius.circular(15.0),
-                              ),
-
-                              child: 
-                              
-                              Column(
-
-                                children: [
-                                  
-                                  Expanded(
-                                    
-                                    child: 
-                                      Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      //crossAxisAlignment: CrossAxisAlignment.center,
-
-                                      children: const [
-                                        Text(
-                                          "PRODUTOS",
-                                          textAlign: TextAlign.center,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                            fontSize: 12
-                                          ),
-                                        ),
-
-                                      ],
-
-                                    ),
-                                  ),
-
-                                  Expanded(
-                                    
-                                    child: 
-                                      Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-
-                                      children: const [
-                                        Text(
-                                          "6",
-                                          textAlign: TextAlign.center,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                            fontSize: 14
-                                          ),
-                                        ),
-
-                                      ],
-
-                                    ),
-                                  ),
-
-                                ],
-                              )
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF00049F),
+                              borderRadius: BorderRadius.circular(15.0),
                             ),
-                          ],
 
-                        ),
+                            child: 
+                            
+                            Column(
 
-                        Column(
-                        
-                          children: [
-
-                            Container(
-
-                              height: 50,
-                              width: 150, 
-                              padding: const EdgeInsets.all(5),
-
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF00049F),
-                                borderRadius: BorderRadius.circular(15.0),
-                              ),
-
-                              child: 
-                              
-                              Column(
-
-                                children: [
+                              children: [
+                                
+                                Expanded(
                                   
-                                  Expanded(
-                                    
-                                    child: 
-                                      Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      //crossAxisAlignment: CrossAxisAlignment.center,
+                                  child: 
+                                    Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    //crossAxisAlignment: CrossAxisAlignment.center,
 
-                                      children: const [
-                                        Text(
-                                          "QUANTIDADE TOTAL",
-                                          textAlign: TextAlign.center,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                            fontSize: 12
-                                          ),
+                                    children: const [
+                                      Text(
+                                        "PRODUTOS",
+                                        textAlign: TextAlign.center,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                          fontSize: 12
                                         ),
+                                      ),
 
-                                      ],
+                                    ],
 
-                                    ),
                                   ),
+                                ),
 
-                                  Expanded(
-                                    
-                                    child: 
-                                      Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                Expanded(
+                                  
+                                  child: 
+                                    Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
 
-                                      children: const [
-                                        Text(
-                                          "12",
-                                          textAlign: TextAlign.center,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                            fontSize: 14
-                                          ),
+                                    children: const [
+                                      Text(
+                                        "6",
+                                        textAlign: TextAlign.center,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                          fontSize: 14
                                         ),
-                                      ],
+                                      ),
 
-                                    ),
+                                    ],
+
                                   ),
-                                ],
-                              )
+                                ),
+
+                              ],
+                            )
+                          ),
+                        ],
+
+                      ),
+
+                      Column(
+                      
+                        children: [
+
+                          Container(
+
+                            height: 50,
+                            width: 150, 
+                            padding: const EdgeInsets.all(5),
+
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF00049F),
+                              borderRadius: BorderRadius.circular(15.0),
                             ),
-                          ],
-                        ),
-                      ],
-                    )
+
+                            child: 
+                            
+                            Column(
+
+                              children: [
+                                
+                                Expanded(
+                                  
+                                  child: 
+                                    Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    //crossAxisAlignment: CrossAxisAlignment.center,
+
+                                    children: const [
+                                      Text(
+                                        "QUANTIDADE TOTAL",
+                                        textAlign: TextAlign.center,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                          fontSize: 12
+                                        ),
+                                      ),
+
+                                    ],
+
+                                  ),
+                                ),
+
+                                Expanded(
+                                  
+                                  child: 
+                                    Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+
+                                    children: const [
+                                      Text(
+                                        "12",
+                                        textAlign: TextAlign.center,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                          fontSize: 14
+                                        ),
+                                      ),
+                                    ],
+
+                                  ),
+                                ),
+                              ],
+                            )
+                          ),
+                        ],
+                      ),
+                    ],
                   )
                 ),
 
@@ -387,15 +510,10 @@ class Home extends StatelessWidget {
                     height: 75.0,
 
                     child: FloatingActionButton(
-                      onPressed: () async => (
-                        await scanner.scan()
 
-                      ),
-
-
-                  
-
-                      
+                      onPressed: () async {
+                        _scanQR();
+                      },
                       
                       // showDialog<String>(
                       //   context: context,
