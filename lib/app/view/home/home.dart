@@ -1,10 +1,13 @@
+import 'package:barcodereader/app/model/barcode.dart';
+import 'package:barcodereader/app/model/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:qrscan/qrscan.dart' as scanner;
-//import '../../model/scan_qr_bar.dart';
+import '../../model/dao_login.dart';
+import '../../model/dao_home.dart';
 
 /// This is the main application widget.
 class Home extends StatelessWidget {
@@ -28,6 +31,23 @@ class MyStatefulWidget extends StatefulWidget {
 
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
    
+  DaoLogin daoLogin = DaoLogin();
+  User usss = User(0, "Teste");
+
+  DaoHome daoHome = DaoHome();
+  Barcode isap = Barcode(0, "Teste", "Barcode");
+
+
+  Future neverStart() async {
+    List<User> usss = await daoLogin.getUser();
+    print(usss.last.code);
+  }
+
+  Future getsAllFuzzy() async {
+    List<Barcode> isss = await daoHome.getAll();
+    print(isss.last.code);
+  }
+
   Future _scanQR() async {
     //await Permission.camera.request();
     var barcode = await scanner.scan();
@@ -97,7 +117,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
               alignment: Alignment.bottomRight,
 
               child: 
-              
+
                 GestureDetector(
                   onTap: () {},
 
@@ -125,7 +145,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                     ),
 
                     child:
-                                              
+
                     const Text(
                       "Adicionar",
                       style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
@@ -142,7 +162,9 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
 	@override
 	Widget build(BuildContext context) {
-    
+
+    neverStart();
+
     //Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)=>FormLogin()),(Route<dynamic> route) => false);
 
     final List<String> items = List<String>.generate(10, (i) => 'Item $i');

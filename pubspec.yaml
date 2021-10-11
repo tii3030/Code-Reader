@@ -39,7 +39,10 @@ dependencies:
   carousel_slider: ^4.0.0
   dio: ^4.0.0
   qrscan: ^0.3.2
-  
+  path:
+  path_provider:
+  sqflite:
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

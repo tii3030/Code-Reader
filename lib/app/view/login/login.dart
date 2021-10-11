@@ -1,8 +1,10 @@
+import 'package:barcodereader/app/model/user.dart';
 import 'package:barcodereader/app/view/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-//import 'package:local_auth/local_auth.dart';
 import '../../requests/request_login.dart';
+import '../../model/dao_login.dart';
+
 
 /// This is the main application widget.
 class FormLogin extends StatelessWidget {
@@ -25,6 +27,15 @@ class MyStatefulWidget extends StatefulWidget {
 }
 
 class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProviderStateMixin {
+
+  DaoLogin create = DaoLogin();
+
+  Future insert(String code) async {
+
+    User user = User(0, code);
+    create.create(user);
+
+  }
 
   final myController = TextEditingController();
   final myControllerPass = TextEditingController();
@@ -53,7 +64,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProvider
 
   @override
   void dispose() {
-    // Clean up the controller when the widget is disposed.
+    // CLEAN UP THE CONTROLLER WHEN THE WIDGET IS DISPOSED
     myController.dispose();
     myControllerPass.dispose();
 
@@ -62,7 +73,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProvider
 
 	@override
 	Widget build(BuildContext context) {
-    
+
 		return Scaffold(
 
       //IMPEDE O REDIMENSIONAMENTO DA VIEW AO ACIONAR O INPUT
@@ -217,7 +228,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProvider
                 ),
 
                 GestureDetector(
-                  onTap: () {
+                  onTap: () async {
 
                     if((myController.text).isEmpty) {
                       _handleEmailValid(true);
@@ -228,13 +239,16 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProvider
                     }
                     
                     if(((myController.text).isNotEmpty) && ((myControllerPass.text).isNotEmpty)) {
-                      
+
                       _handleLoad(true);
 
                       LoginApi loginApi = LoginApi(myController.text, myControllerPass.text);
-                      loginApi.loginApi().then((authenticated) => {
+                      loginApi.loginApi().then((authenticated) =>  {
                         
                         if(authenticated == true) {
+
+                          insert(myController.text).then((value) => null),
+
                           Navigator.push(
                             context,
                             MaterialPageRoute(
