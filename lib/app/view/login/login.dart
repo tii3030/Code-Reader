@@ -3,10 +3,8 @@ import 'package:barcodereader/app/view/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import '../../requests/request_login.dart';
-import '../../model/dao_login.dart';
+import '../../controller/dao_login.dart';
 
-
-/// This is the main application widget.
 class FormLogin extends StatelessWidget {
   const FormLogin({Key? key}) : super(key: key);
 
@@ -18,7 +16,6 @@ class FormLogin extends StatelessWidget {
   }
 }
 
-/// This is the stateful widget that the main application instantiates.
 class MyStatefulWidget extends StatefulWidget {
   const MyStatefulWidget({Key? key}) : super(key: key);
 
@@ -28,12 +25,12 @@ class MyStatefulWidget extends StatefulWidget {
 
 class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProviderStateMixin {
 
-  DaoLogin create = DaoLogin();
+  DaoLogin daoLogin = DaoLogin();
 
   Future insert(String code) async {
 
     User user = User(0, code);
-    create.create(user);
+    daoLogin.create(user);
 
   }
 
@@ -76,11 +73,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProvider
 
 		return Scaffold(
 
-      //IMPEDE O REDIMENSIONAMENTO DA VIEW AO ACIONAR O INPUT
       resizeToAvoidBottomInset: false,
-			// appBar: AppBar(
-			//     title: const Text('WWW'),
-			// ),
 
 			body:
 
@@ -89,11 +82,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProvider
         child: 
 
         Container(
-
           height: MediaQuery.of(context).size.height,
-
           decoration:const BoxDecoration(
-            //color: Color(0xFF00049F),
 
             gradient: LinearGradient(
               colors: <Color>[
@@ -130,8 +120,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProvider
             child:
 
             Column(
-
-              //ALINHAMENTO DA COLUNA
               mainAxisAlignment: MainAxisAlignment.center,
                           
               children: [
@@ -150,11 +138,9 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProvider
 
                 Container(
                   padding: const EdgeInsets.only(left: 10, right: 10),
-                  //height: 55,
                   child:
 
                   TextFormField(
-
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter some text';
@@ -165,7 +151,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProvider
                     //CONTROLER CODE USER
                     controller: myController,
                     obscureText: false,
-
                     decoration: InputDecoration(
 
                       errorText: isValidEmail ? 'Email inválido' : null,
@@ -194,7 +179,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProvider
 
                 Container(
                   padding: const EdgeInsets.only(left: 10, right: 10),
-                  //height: 55,
 
                   child:
                   
@@ -306,21 +290,33 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProvider
 
                       children: <Widget>[
 
-                        load ?
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 500),
+                          child: load ? 
 
-                        const CircularProgressIndicator(
-                          color: Colors.white,
-                          //value: controller.value,
-                          valueColor: AlwaysStoppedAnimation(Colors.white),
-                          strokeWidth: 3.0
-                        )
+                          const SizedBox(
+                            height: 30,
+                            width: 30,
+                            child: Center(
+                              child: 
+                              
+                              CircularProgressIndicator(
+                                color: Colors.white,
+                                valueColor: AlwaysStoppedAnimation(Colors.white),
+                                strokeWidth: 3.0
+                              )
+                            ),
+                          )
+                            
+                          :
 
-                        :
+                          const Text(
+                            "LOGIN",
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          ),
 
-                        const Text(
-                          "LOGIN",
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                         ),
+
                       ],
                     )
                           

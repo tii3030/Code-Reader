@@ -4,7 +4,7 @@
 
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'user.dart';
+import '../model/user.dart';
 
 class DaoLogin {
 

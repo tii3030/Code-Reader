@@ -4,16 +4,17 @@
 
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'barcode.dart';
+import '../model/barcode.dart';
 
 class DaoHome {
 
-  static const String CREATE_USERS_TABLE_SCRIPT = "CREATE TABLE barcodes(id INTEGER , code TEXT, barcode TEXT)";
-  static const String DATABASE_NAME = "DB_barcode";
+  static const String CREATE_USERS_TABLE_SCRIPT = "CREATE TABLE barcodes(id INTEGER, code TEXT, barcode TEXT)";
+  static const String DATABASE_NAME = "DB_barcode.db";
   static const String TABLE_NAME = "barcodes";
 
   // CREATE DATABASE
   Future<Database> _getDatabase() async {
+
     return openDatabase(
       join(await getDatabasesPath(), DATABASE_NAME),
       onCreate: (db, version) {
@@ -35,6 +36,7 @@ class DaoHome {
       );
 
     } catch (ex) {
+      print("Nao foi possivel criar a tabela");
       print(ex);
       return;
     }
@@ -44,7 +46,7 @@ class DaoHome {
     final Map<String, dynamic> barcodes = Map();
       barcodes['id'] =  barcode.id;
       barcodes['code'] =  barcode.code;
-      barcodes['barcode'] =  barcode.code;
+      barcodes['barcode'] =  barcode.barcode;
 
     return barcodes;
   }
@@ -67,12 +69,22 @@ class DaoHome {
         row['id'],
         row['code'],
         row['barcode'],
-
       );
 
       barcodes.add(user);
     }
 
     return barcodes;
+  }
+
+  Future<void> cleanDatabase() async {
+    try{
+
+      var dbs = await _getDatabase();
+      dbs.execute("DELETE FROM " + TABLE_NAME);
+
+    } catch(error){
+      throw Exception('DbBase.cleanDatabase: ' + error.toString());
+    }
   }
 }

@@ -15,4 +15,9 @@ class Barcode {
     return 'id: $id, code: $code, barcode: $barcode';
   }
 
+  Map toJson() => {
+    'code': code,
+    'barcode': barcode,
+  };
+
 }

@@ -6,10 +6,10 @@ import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:qrscan/qrscan.dart' as scanner;
-import '../../model/dao_login.dart';
-import '../../model/dao_home.dart';
+import '../../controller/dao_login.dart';
+import '../../controller/dao_home.dart';
+import '../../controller/syncup.dart';
 
-/// This is the main application widget.
 class Home extends StatelessWidget {
   const Home({Key? key}) : super(key: key);
 
@@ -21,7 +21,6 @@ class Home extends StatelessWidget {
   }
 }
 
-/// This is the stateful widget that the main application instantiates.
 class MyStatefulWidget extends StatefulWidget {
   const MyStatefulWidget({Key? key}) : super(key: key);
 
@@ -29,146 +28,185 @@ class MyStatefulWidget extends StatefulWidget {
   State<MyStatefulWidget> createState() => _MyStatefulWidgetState();
 }
 
-class _MyStatefulWidgetState extends State<MyStatefulWidget> {
+class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProviderStateMixin {
    
+  List<String> items = [];
+  String itemsLenght = '';
   DaoLogin daoLogin = DaoLogin();
-  User usss = User(0, "Teste");
-
   DaoHome daoHome = DaoHome();
-  Barcode isap = Barcode(0, "Teste", "Barcode");
+  bool requestSync = false;
 
-
-  Future neverStart() async {
-    List<User> usss = await daoLogin.getUser();
-    print(usss.last.code);
+  // GET CODE OF USER
+  Future getCode() async {
+    List<User> obj = await daoLogin.getUser();
+    return obj.last.code;
   }
 
-  Future getsAllFuzzy() async {
-    List<Barcode> isss = await daoHome.getAll();
-    print(isss.last.code);
+  // INSERT DATA IN DB
+  Future insert(String barcode) async {
+
+    String code = await getCode();
+    Barcode barcodeObj = Barcode(0, code, barcode);
+    daoHome.create(barcodeObj);
+    await getBarcodeList();
+
   }
 
+  // GET LIST BARCODE AND QRCODE
+  Future getBarcodeList() async {
+    List<Barcode> foos = await daoHome.getAll();
+
+    List<String> itemsTemp = [];
+
+    foos.asMap().forEach((i, value) {
+      itemsTemp.add(value.barcode);
+      //print('index=$i, value=$value');
+    });
+
+    setState(() {
+      items = itemsTemp;
+      itemsLenght = itemsTemp.length.toString();
+    });
+
+    itemsTemp = [];
+
+    return 1;
+  }
+
+  // CONTROLLER SCROLL
+  final _controller = ScrollController(); 
+  bool bottomPage = true;
+
+  late final AnimationController _controllerT;
+  @override
+  void initState() {
+    super.initState();
+
+    _controllerT = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat();
+
+    // SETUP THE LISTNER
+    _controller.addListener(() {
+      
+      if (_controller.position.pixels ==_controller.position.maxScrollExtent) {
+
+        setState(() {
+          bottomPage = false;
+        });
+
+      } else {
+        setState(() {
+          bottomPage = true;
+        });
+      }
+      
+    });
+  }
+
+  // SCAN BARCODE AND QRCODE FUNCTION
   Future _scanQR() async {
     //await Permission.camera.request();
     var barcode = await scanner.scan();
-    if (barcode == null) {
-      //
-    } else {
 
-      showDialog<String>(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-          scrollable: true,
-          insetPadding: const EdgeInsets.symmetric(
-            horizontal: 20.0,
-            vertical: 150.0,
-          ),
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        scrollable: true,
+        insetPadding: const EdgeInsets.symmetric(
+          horizontal: 20.0,
+          vertical: 150.0,
+        ),
             
-          //title: const Text('NOVA CONTAGEM'),
-          content:
+        content:
 
-          Column(
+        Column(
 
-          //mainAxisSize: MainAxisSize.min,
+          children: [
 
-            children: [
+            Container(
+              margin: const EdgeInsets.only(top: 20, bottom: 20),
+              width: MediaQuery.of(context).size.width,
 
-              Container(
+              child:
 
-                margin: const EdgeInsets.only(top: 20, bottom: 20),
-                width: MediaQuery.of(context).size.width,
-                  decoration: const BoxDecoration(
-                    //color: Color(0xFFEDEDED)
-                  ),
+              const Text(
+                "Verifique o código abaixo:",
+                style: TextStyle(
+                  color: Colors.black45,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold
+                ),
+              ) 
+            ),
+
+            Container(
+              margin: const EdgeInsets.only(top: 20, bottom: 20),
+              width: MediaQuery.of(context).size.width,
+
+              child:
+
+              Text(
+                barcode!,
+                style: const TextStyle(
+                  color: Colors.black45,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold
+                ),
+              )
+            ),
+
+            Align(
+            alignment: Alignment.bottomRight,
+
+            child: 
+
+              GestureDetector(
+                onTap: () {
+                  // CALL insert()
+                  insert(barcode);
+                  Navigator.of(context).pop();               
+                },
 
                 child:
 
-                const Text(
-                  "Verifique o código abaixo:",
-                  style: TextStyle(
-                    color: Colors.black45,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold
+                Container(
+                  alignment: Alignment.center,
+                  margin: const EdgeInsets.only(top: 20, bottom: 10),
+                  height: 45,
+                  width: 95,
+
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF00049F),                                                    
+                    borderRadius: BorderRadius.circular(10.0),
+
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.grey,
+                        offset: Offset(0.0, 1.0), //(x,y)
+                        blurRadius: 6.0,
+                      ),
+                    ],
                   ),
-                ) 
-              ),
-
-              Container(
-
-                margin: const EdgeInsets.only(top: 20, bottom: 20),
-                width: MediaQuery.of(context).size.width,
-                  decoration: const BoxDecoration(
-                    //color: Color(0xFFEDEDED)
-                  ),
-
-                child:
-
-                Text(
-                  barcode,
-                  style: const TextStyle(
-                    color: Colors.black45,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold
-                  ),
-                )
-              ),
-
-              Align(
-              alignment: Alignment.bottomRight,
-
-              child: 
-
-                GestureDetector(
-                  onTap: () {},
 
                   child:
 
-                  Container(
-                    alignment: Alignment.center,
-                    margin: const EdgeInsets.only(top: 20, bottom: 10),
-                    //padding: const EdgeInsets.only(left: 20, right: 20),
-
-                    height: 45,
-                    width: 95,
-
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF00049F),                                                    
-                      borderRadius: BorderRadius.circular(10.0),
-
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.grey,
-                          offset: Offset(0.0, 1.0), //(x,y)
-                          blurRadius: 6.0,
-                        ),
-                      ],
-                    ),
-
-                    child:
-
-                    const Text(
-                      "Adicionar",
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                    ),
+                  const Text(
+                    "Adicionar",
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                   ),
                 ),
-              )
-            ],
-          ),
+              ),
+            )
+          ],
         ),
-      );
-    }
+      ),
+    );
   }
-
+  
 	@override
 	Widget build(BuildContext context) {
 
-    neverStart();
-
     //Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)=>FormLogin()),(Route<dynamic> route) => false);
-
-    final List<String> items = List<String>.generate(10, (i) => 'Item $i');
-
+  
     List <Widget> carousselItens = <Widget>[
       Text(
         'Bem Vindo',   
@@ -234,16 +272,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     ];
 
 		return Scaffold(
-
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     // Add your onPressed code here!
-      //   },
-      //   child: const Icon(Icons.add_outlined),
-      //   backgroundColor: const Color(0xFF011EDB),
-      // ),
       
-      //IMPEDE O REDIMENSIONAMENTO DA VIEW AO ACIONAR O INPUT
       resizeToAvoidBottomInset: false,
 			appBar: AppBar(
         backgroundColor: const Color(0xFF00049F),
@@ -257,7 +286,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 		  body:
 
       Container(
-
         height: MediaQuery.of(context).size.height,
         decoration: const BoxDecoration(
           color: Colors.white,
@@ -275,9 +303,9 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
                 Container(
 
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(15),
                   decoration: const BoxDecoration(
-                    color: Colors.white,
+                    color: Color(0xFF00049F),
 
                     boxShadow: [
                       BoxShadow(
@@ -299,10 +327,9 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                         children: [
 
                           Container(
-
                             height: 50,
                             width: 150, 
-                            padding: const EdgeInsets.all(5),
+                            padding: const EdgeInsets.all(0),
 
                             decoration: BoxDecoration(
                               color: const Color(0xFF00049F),
@@ -318,86 +345,12 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                                 Expanded(
                                   
                                   child: 
-                                    Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    //crossAxisAlignment: CrossAxisAlignment.center,
 
-                                    children: const [
-                                      Text(
-                                        "PRODUTOS",
-                                        textAlign: TextAlign.center,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                          fontSize: 12
-                                        ),
-                                      ),
-
-                                    ],
-
-                                  ),
-                                ),
-
-                                Expanded(
-                                  
-                                  child: 
                                     Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
 
                                     children: const [
-                                      Text(
-                                        "6",
-                                        textAlign: TextAlign.center,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                          fontSize: 14
-                                        ),
-                                      ),
 
-                                    ],
-
-                                  ),
-                                ),
-
-                              ],
-                            )
-                          ),
-                        ],
-
-                      ),
-
-                      Column(
-                      
-                        children: [
-
-                          Container(
-
-                            height: 50,
-                            width: 150, 
-                            padding: const EdgeInsets.all(5),
-
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF00049F),
-                              borderRadius: BorderRadius.circular(15.0),
-                            ),
-
-                            child: 
-                            
-                            Column(
-
-                              children: [
-                                
-                                Expanded(
-                                  
-                                  child: 
-                                    Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    //crossAxisAlignment: CrossAxisAlignment.center,
-
-                                    children: const [
                                       Text(
                                         "QUANTIDADE TOTAL",
                                         textAlign: TextAlign.center,
@@ -408,9 +361,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                                           fontSize: 12
                                         ),
                                       ),
-
                                     ],
-
                                   ),
                                 ),
 
@@ -420,19 +371,18 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                                     Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
 
-                                    children: const [
+                                    children: [
                                       Text(
-                                        "12",
+                                        itemsLenght,
                                         textAlign: TextAlign.center,
                                         overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                           color: Colors.white,
-                                          fontSize: 14
+                                          fontSize: 24
                                         ),
                                       ),
                                     ],
-
                                   ),
                                 ),
                               ],
@@ -444,35 +394,51 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                   )
                 ),
 
-                const SizedBox(height: 16,),
+                //const SizedBox(height: 16,),
 
                 Expanded(
                   
                   child: 
                   
                   Container(
-                    //height: 550,
-                    padding: const EdgeInsets.only(left: 20, right: 20),
-
+                    padding: const EdgeInsets.all(5),
                     decoration: const BoxDecoration(
                       color: Color(0xFFFFFFFF),
                     ),
 
                     child:
 
-                    ListView.separated(
-                      itemCount: items.length,
-                      itemBuilder: (context, index) {
+                    FutureBuilder(
+                      future: getBarcodeList(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return 
+                          ListView.separated(
+                            controller: _controller,
+                            itemCount: items.length,
+                            itemBuilder: (context, index) {
 
-                        return ListTile(
-                          title: Text(items[index]),
-                        );
-                      },
+                              return ListTile(
+                                title: Text(items[index]),
+                              );
+                            },
 
-                      separatorBuilder: (BuildContext context, int index) => const Divider(),
+                            separatorBuilder: (BuildContext context, int index) => const Divider(),
+                          );
+
+                        } else {
+
+                          return const Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              valueColor: AlwaysStoppedAnimation(Colors.white),
+                              strokeWidth: 3.0
+                            ),
+                          );
+                        }
+                      }
                     ),
                   ),
-
                 ),
               ],
             ),
@@ -483,291 +449,297 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
               child:
 
-              Column(
+              AnimatedOpacity(
+                opacity: bottomPage ? 1 : 0,
+                duration: const Duration(milliseconds: 200),
 
-                children: [
+                child: 
 
-                  // Container(
-                  //   margin: const EdgeInsets.only(bottom: 15),
-                    
-                  //   child: 
-                                
-                  //   FloatingActionButton(
-                  //     onPressed: () {
-                  //                   // Add your onPressed code here!
-                  //     },
-                        
-                  //     child:
-                      
-                  //     const Icon(
-                  //       Icons.add_outlined,
-                  //       size: 40,
-                  //     ),
-                      
-                  //     backgroundColor: const Color(0xFF00049F),
-                  //   )
-                  // ),
+                Column(
 
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 15),
+                  children: [
 
-                    child: 
-        
-                    FloatingActionButton(
-                      onPressed: () {
-                                  // Add your onPressed code here!
-                      },
-                      
-                      child: const Icon(
-                        Icons.sync,
-                        size: 40,
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 15),
+
+                      child: 
+          
+                      FloatingActionButton(
+                        onPressed: () async {
+
+                          setState(() {
+                            requestSync = true;
+                          });
+
+                          Syncup syncup = Syncup();
+
+                          await syncup.sendData().then((isSuccess) =>  {
+                            setState(() {
+                              requestSync = false;
+                            })
+                          });
+
+                          //await daoHome.cleanDatabase();
+
+                        },
+
+                        child:
+
+                        RotationTransition(
+                          turns: Tween(
+                            begin: requestSync ? 1.0 : 0.0,
+                            end: 0.0
+                          ).animate(_controllerT),
+                          child: 
+
+                          const Icon(
+                            Icons.sync,
+                            size: 40,
+                          ),
+
+                        ),
+
+                        backgroundColor: const Color(0xFF00049F),
                       ),
-
-                      backgroundColor: const Color(0xFF00049F),
                     ),
-                  ),
 
-                  SizedBox(
-                    width: 75.0,
-                    height: 75.0,
+                    SizedBox(
+                      width: 75.0,
+                      height: 75.0,
 
-                    child: FloatingActionButton(
+                      child: FloatingActionButton(
 
-                      onPressed: () async {
-                        _scanQR();
-                      },
-                      
-                      // showDialog<String>(
-                      //   context: context,
-                      //   builder: (BuildContext context) => AlertDialog(
-                      //     scrollable: true,
-                      //     insetPadding: const EdgeInsets.symmetric(
-                      //       horizontal: 20.0,
-                      //       vertical: 150.0,
-                      //     ),
-                      //     //title: const Text('NOVA CONTAGEM'),
-                      //     content:
+                        onPressed: () async {
+                          // CALL _scanQR FUNCTION
+                          _scanQR();
+                        },
+                        
+                        // showDialog<String>(
+                        //   context: context,
+                        //   builder: (BuildContext context) => AlertDialog(
+                        //     scrollable: true,
+                        //     insetPadding: const EdgeInsets.symmetric(
+                        //       horizontal: 20.0,
+                        //       vertical: 150.0,
+                        //     ),
+                        //     //title: const Text('NOVA CONTAGEM'),
+                        //     content:
 
-                      //     Column(
+                        //     Column(
 
-                      //       //mainAxisSize: MainAxisSize.min,
+                        //       //mainAxisSize: MainAxisSize.min,
 
-                      //       children: [
+                        //       children: [
 
-                      //         Container(
+                        //         Container(
 
-                      //           margin: const EdgeInsets.only(top: 20, bottom: 20),
-                      //           width: MediaQuery.of(context).size.width,
-                      //           decoration: const BoxDecoration(
-                      //             //color: Color(0xFFEDEDED)
-                      //           ),
+                        //           margin: const EdgeInsets.only(top: 20, bottom: 20),
+                        //           width: MediaQuery.of(context).size.width,
+                        //           decoration: const BoxDecoration(
+                        //             //color: Color(0xFFEDEDED)
+                        //           ),
 
-                      //           child: 
-                      //             const Text(
-                      //               "Nova Contagem",
-                      //               style: TextStyle(
-                      //                 color: Colors.black38,
-                      //                 fontSize: 20,
-                      //                 fontWeight: FontWeight.bold
-                      //               ),
-                      //             )
-                      //         ),
+                        //           child: 
+                        //             const Text(
+                        //               "Nova Contagem",
+                        //               style: TextStyle(
+                        //                 color: Colors.black38,
+                        //                 fontSize: 20,
+                        //                 fontWeight: FontWeight.bold
+                        //               ),
+                        //             )
+                        //         ),
 
-                      //         Container(
-                      //           padding: const EdgeInsets.only(left: 12.0),
-                      //           margin:  const EdgeInsets.only(bottom:10.0, top: 10.0),
-                      //           height: 50,
+                        //         Container(
+                        //           padding: const EdgeInsets.only(left: 12.0),
+                        //           margin:  const EdgeInsets.only(bottom:10.0, top: 10.0),
+                        //           height: 50,
 
-                      //           decoration: BoxDecoration(
-                      //             borderRadius: BorderRadius.circular(10.0),
-                      //             color: const Color(0xFFEDEDED)
-                      //             //border: Border.all(width: 1.0, color: const Color(0xFFDBDBDB)),
-                      //           ),
+                        //           decoration: BoxDecoration(
+                        //             borderRadius: BorderRadius.circular(10.0),
+                        //             color: const Color(0xFFEDEDED)
+                        //             //border: Border.all(width: 1.0, color: const Color(0xFFDBDBDB)),
+                        //           ),
 
-                      //           child: 
+                        //           child: 
+                                        
+                        //           const TextField(
+                        //             style: TextStyle(
+                        //               color: Colors.black45,
+                        //             ),
                                       
-                      //           const TextField(
-                      //             style: TextStyle(
-                      //               color: Colors.black45,
-                      //             ),
+                        //             obscureText: false,
+
+                        //             decoration: InputDecoration(      
+                        //               hintText: "Nome do Produto",
+                        //               hintStyle: TextStyle(
+                        //                 fontWeight: FontWeight.w400,
+                        //                 color: Colors.black45
+                        //               ),
+
+                        //               //REMOVE A BORDA E O EFEITO DE FOCO
+                        //               enabledBorder: InputBorder.none,
+                        //               focusedBorder: InputBorder.none
+                        //             ),
                                     
-                      //             obscureText: false,
+                        //           ),
+                        //         ),
 
-                      //             decoration: InputDecoration(      
-                      //               hintText: "Nome do Produto",
-                      //               hintStyle: TextStyle(
-                      //                 fontWeight: FontWeight.w400,
-                      //                 color: Colors.black45
-                      //               ),
+                        //         Container(
+                        //           padding: const EdgeInsets.only(left: 12.0),
+                        //           margin:  const EdgeInsets.only(bottom:10.0, top: 10.0),
+                        //           height: 50,
 
-                      //               //REMOVE A BORDA E O EFEITO DE FOCO
-                      //               enabledBorder: InputBorder.none,
-                      //               focusedBorder: InputBorder.none
-                      //             ),
-                                  
-                      //           ),
-                      //         ),
+                        //           decoration: BoxDecoration(
+                        //             borderRadius: BorderRadius.circular(10.0),
+                        //             color: const Color(0xFFEDEDED)
+                        //             //border: Border.all(width: 1.0, color: const Color(0xFFDBDBDB)),
+                        //           ),
 
-                      //         Container(
-                      //           padding: const EdgeInsets.only(left: 12.0),
-                      //           margin:  const EdgeInsets.only(bottom:10.0, top: 10.0),
-                      //           height: 50,
-
-                      //           decoration: BoxDecoration(
-                      //             borderRadius: BorderRadius.circular(10.0),
-                      //             color: const Color(0xFFEDEDED)
-                      //             //border: Border.all(width: 1.0, color: const Color(0xFFDBDBDB)),
-                      //           ),
-
-                      //           child: 
+                        //           child: 
+                                        
+                        //           const TextField(
+                        //             style: TextStyle(
+                        //               color: Colors.black45,
+                        //             ),
                                       
-                      //           const TextField(
-                      //             style: TextStyle(
-                      //               color: Colors.black45,
-                      //             ),
+                        //             obscureText: false,
+
+                        //             decoration: InputDecoration(      
+                        //               hintText: "Código de Barras",
+                        //               hintStyle: TextStyle(
+                        //                 fontWeight: FontWeight.w400,
+                        //                 color: Colors.black45
+                        //               ),
+
+                        //               //REMOVE A BORDA E O EFEITO DE FOCO
+                        //               enabledBorder: InputBorder.none,
+                        //               focusedBorder: InputBorder.none
+                        //             ),
                                     
-                      //             obscureText: false,
-
-                      //             decoration: InputDecoration(      
-                      //               hintText: "Código de Barras",
-                      //               hintStyle: TextStyle(
-                      //                 fontWeight: FontWeight.w400,
-                      //                 color: Colors.black45
-                      //               ),
-
-                      //               //REMOVE A BORDA E O EFEITO DE FOCO
-                      //               enabledBorder: InputBorder.none,
-                      //               focusedBorder: InputBorder.none
-                      //             ),
-                                  
-                      //           ),
-                      //         ),
+                        //           ),
+                        //         ),
 
 
-                      //         Container(
-                      //           padding: const EdgeInsets.only(left: 12.0),
-                      //           margin:  const EdgeInsets.only(bottom:10.0, top: 10.0),
-                      //           height: 50,
+                        //         Container(
+                        //           padding: const EdgeInsets.only(left: 12.0),
+                        //           margin:  const EdgeInsets.only(bottom:10.0, top: 10.0),
+                        //           height: 50,
 
-                      //           decoration: BoxDecoration(
-                      //             borderRadius: BorderRadius.circular(10.0),
-                      //             color: const Color(0xFFEDEDED)
-                      //             //border: Border.all(width: 1.0, color: const Color(0xFFDBDBDB)),
-                      //           ),
+                        //           decoration: BoxDecoration(
+                        //             borderRadius: BorderRadius.circular(10.0),
+                        //             color: const Color(0xFFEDEDED)
+                        //             //border: Border.all(width: 1.0, color: const Color(0xFFDBDBDB)),
+                        //           ),
 
-                      //           child: 
+                        //           child: 
+                                        
+                        //           const TextField(
+                        //             style: TextStyle(
+                        //               color: Colors.black45,
+                        //             ),
                                       
-                      //           const TextField(
-                      //             style: TextStyle(
-                      //               color: Colors.black45,
-                      //             ),
+                        //             obscureText: false,
+
+                        //             decoration: InputDecoration(      
+                        //               hintText: "Quantidade",
+                        //               hintStyle: TextStyle(
+                        //                 fontWeight: FontWeight.w400,
+                        //                 color: Colors.black45
+                        //               ),
+
+                        //               //REMOVE A BORDA E O EFEITO DE FOCO
+                        //               enabledBorder: InputBorder.none,
+                        //               focusedBorder: InputBorder.none
+                        //             ),
                                     
-                      //             obscureText: false,
+                        //           ),
+                        //         ),
 
-                      //             decoration: InputDecoration(      
-                      //               hintText: "Quantidade",
-                      //               hintStyle: TextStyle(
-                      //                 fontWeight: FontWeight.w400,
-                      //                 color: Colors.black45
-                      //               ),
+                        //         Row(
+                        //           mainAxisAlignment: MainAxisAlignment.end,
 
-                      //               //REMOVE A BORDA E O EFEITO DE FOCO
-                      //               enabledBorder: InputBorder.none,
-                      //               focusedBorder: InputBorder.none
-                      //             ),
-                                  
-                      //           ),
-                      //         ),
+                        //           children: [
+                        //             GestureDetector(
+                        //               onTap: () {},
 
-                      //         Row(
-                      //           mainAxisAlignment: MainAxisAlignment.end,
-
-                      //           children: [
-                      //             GestureDetector(
-                      //               onTap: () {},
-
-                      //               child:
-                                          
-                      //               Container(
-                      //                 alignment: Alignment.center,
-                      //                 margin: const EdgeInsets.only(top: 20, bottom: 10, right: 10),
-                      //                 //padding: const EdgeInsets.only(left: 20, right: 20),
-
-                      //                 height: 40,
-                      //                 width: 80,
-
-                      //                 decoration: BoxDecoration(
-                      //                   color: const Color(0xFF00049F),                                                    
-                      //                   borderRadius: BorderRadius.circular(10.0),
-
-                      //                 ),
-
-                      //                 child:
-
-                      //                 const Text(
-                      //                   "Cancelar",
-                      //                   style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                      //                 ),
-                      //               ),
-                      //             ),
-
-                      //             GestureDetector(
-                      //               onTap: () {},
-
-                      //               child:
-
-                      //               Container(
-                      //                 alignment: Alignment.center,
-                      //                 margin: const EdgeInsets.only(top: 20, bottom: 10),
-                      //                 //padding: const EdgeInsets.only(left: 20, right: 20),
-
-                      //                 height: 40,
-                      //                 width: 80,
-
-                      //                 decoration: BoxDecoration(
-                      //                   color: const Color(0xFF00049F),                                                    
-                      //                   borderRadius: BorderRadius.circular(10.0),
-
-                      //                 ),
-
-                      //                 child:
+                        //               child:
                                             
-                      //                 const Text(
-                      //                   "Adicionar",
-                      //                   style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                      //                 ),
-                      //               ),
-                      //             ),
+                        //               Container(
+                        //                 alignment: Alignment.center,
+                        //                 margin: const EdgeInsets.only(top: 20, bottom: 10, right: 10),
+                        //                 //padding: const EdgeInsets.only(left: 20, right: 20),
 
-                      //           ]
-                      //         )
-                      //       ],
-                      //     ),
-                      //   ),
-                      // ),
+                        //                 height: 40,
+                        //                 width: 80,
+
+                        //                 decoration: BoxDecoration(
+                        //                   color: const Color(0xFF00049F),                                                    
+                        //                   borderRadius: BorderRadius.circular(10.0),
+
+                        //                 ),
+
+                        //                 child:
+
+                        //                 const Text(
+                        //                   "Cancelar",
+                        //                   style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        //                 ),
+                        //               ),
+                        //             ),
+
+                        //             GestureDetector(
+                        //               onTap: () {},
+
+                        //               child:
+
+                        //               Container(
+                        //                 alignment: Alignment.center,
+                        //                 margin: const EdgeInsets.only(top: 20, bottom: 10),
+                        //                 //padding: const EdgeInsets.only(left: 20, right: 20),
+
+                        //                 height: 40,
+                        //                 width: 80,
+
+                        //                 decoration: BoxDecoration(
+                        //                   color: const Color(0xFF00049F),                                                    
+                        //                   borderRadius: BorderRadius.circular(10.0),
+
+                        //                 ),
+
+                        //                 child:
+                                              
+                        //                 const Text(
+                        //                   "Adicionar",
+                        //                   style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        //                 ),
+                        //               ),
+                        //             ),
+
+                        //           ]
+                        //         )
+                        //       ],
+                        //     ),
+                        //   ),
+                        // ),
+                        
+                        child:
                       
-                      child:
-                    
-                      Image.asset("assets/images/barcode.png", height: 40),
-                      backgroundColor: const Color(0xFF00049F),
+                        Image.asset("assets/images/barcode.png", height: 40),
+                        backgroundColor: const Color(0xFF00049F),
+                      ),
                     ),
-                  ),
-
-                ],
-                          
+                  ],
+                )
               )
             ),
-            
           ],
         )
       ),
 
       drawer: Drawer(
-        // Add a ListView to the drawer. This ensures the user can scroll
-        // through the options in the drawer if there isn't enough vertical
-        // space to fit everything.
+
         child: ListView(
-          // Important: Remove any padding from the ListView.
           padding: EdgeInsets.zero,
           children: [
 
@@ -796,17 +768,12 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
                     return Builder(
                       builder: (BuildContext context) {
-                        return Container(
-                          
+                        return SizedBox(
                           width: MediaQuery.of(context).size.width,
-                          decoration: const BoxDecoration(
-                            //color: Colors.amber
-                          ),
                           child: i
                         );
                       },
                     );
-
                   }).toList(),
                 )
               )
@@ -815,26 +782,21 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
             Container(
               padding: const EdgeInsets.all(20),
               height: 7,
-
               decoration: const BoxDecoration(
                 color: Colors.yellow,
               ),
-
             ),
 
             Container(
               padding: const EdgeInsets.all(20),
               height: MediaQuery.of(context).size.height,
-
               decoration: const BoxDecoration(
                 color: Colors.white,
               ),
-
             )
           ],
         ),
       ),
-
 		);
 	}
 }
