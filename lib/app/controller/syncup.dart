@@ -3,8 +3,8 @@ import '../model/barcode.dart';
 import 'dao_home.dart';
 import 'dart:convert';
 import 'package:dio/dio.dart';
-
 import 'dao_login.dart';
+import 'dao_home.dart';
 
 class Syncup {
 
@@ -57,23 +57,24 @@ class Syncup {
 
       String jsonsDataString = response.data.toString();
       final jsonData = jsonDecode(jsonsDataString);
-
       try {
 
         if(jsonData['success'] == 1){
-          isSuccess == true;
+          isSuccess = true;
+          DaoHome daoHome = DaoHome();
+          await daoHome.cleanDatabase();
+
         } else {
-          isSuccess == false;
+          isSuccess = false;
         }
 
       } catch (e) {
-          isSuccess == false;
+          isSuccess = false;
       }
 
     } on DioError catch (e) {
-      isSuccess == false;
+      isSuccess = false;
     }
-
     return Future<bool>.value(isSuccess);
 
   }

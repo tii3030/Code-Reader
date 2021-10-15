@@ -153,7 +153,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProvider
                     obscureText: false,
                     decoration: InputDecoration(
 
-                      errorText: isValidEmail ? 'Email inválido' : null,
+                      errorText: isValidEmail ? 'Código inválido' : null,
 
                       prefixIcon: const Icon(
                         Icons.email,
@@ -186,7 +186,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProvider
                     
                     //CONTROLER PASS USER
                     controller: myControllerPass,
-                    obscureText: false,
+                    obscureText: true,
 
                     decoration: InputDecoration(
 
@@ -239,6 +239,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProvider
                               builder: (context) => const Home(),
                             ),
                           ),
+
+                          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)=>Home()),(Route<dynamic> route) => false),
 
                           _handleLoad(false),
 
