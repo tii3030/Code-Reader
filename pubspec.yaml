@@ -41,6 +41,7 @@ dependencies:
   path:
   path_provider:
   sqflite:
+  permission_handler: ^8.2.5
 
 dev_dependencies:
   flutter_test:

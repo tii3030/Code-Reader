@@ -7,12 +7,24 @@ void main() {
 	runApp(
 		MaterialApp(
 			title: 'Flutter Tutorial',
-			home: const FormLogin(),
+			//home: const FormLogin(),
       debugShowCheckedModeBanner: false,
-      routes: {
-        '/login': (context) => const FormLogin(),
-        '/home': (context) => const Home(),
-      }
+      initialRoute: 'login',
+
+      onGenerateRoute: (RouteSettings settings) {
+        WidgetBuilder builder;
+        switch (settings.name) {
+          case 'login':
+            builder = (BuildContext context) => const FormLogin();
+            break;
+          case 'home':
+            builder = (BuildContext context) => const Home();
+            break;
+          default:
+            throw Exception('Invalid route: ${settings.name}');
+        }
+        return MaterialPageRoute<void>(builder: builder, settings: settings);
+      },
 	  ),
   );
 }

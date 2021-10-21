@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:barcodereader/app/model/barcode.dart';
 import 'package:barcodereader/app/model/user.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,6 +11,7 @@ import 'package:qrscan/qrscan.dart' as scanner;
 import '../../controller/dao_login.dart';
 import '../../controller/dao_home.dart';
 import '../../controller/syncup.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class Home extends StatelessWidget {
   const Home({Key? key}) : super(key: key);
@@ -29,7 +32,7 @@ class MyStatefulWidget extends StatefulWidget {
 }
 
 class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProviderStateMixin {
-   
+
   List<String> items = [];
   String itemsLenght = '';
   DaoLogin daoLogin = DaoLogin();
@@ -78,9 +81,12 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProvider
   bool bottomPage = true;
 
   late final AnimationController _controllerT;
+  
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance!.addPostFrameCallback((_) => popUp(context));
 
     _controllerT = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat();
 
@@ -102,9 +108,51 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProvider
     });
   }
 
+  Future popUp(BuildContext context) async {
+    
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        scrollable: true,
+        insetPadding: const EdgeInsets.symmetric(
+          horizontal: 20.0,
+          vertical: 150.0,
+        ),
+            
+        content:
+
+        Column(
+
+          children: [
+
+            Image.asset("assets/images/caution.png", height: 70),
+
+            Container(
+              margin: const EdgeInsets.only(top: 20, bottom: 20),
+              width: MediaQuery.of(context).size.width,
+
+              child:
+
+              const Text(
+                "Não se esqueça de sincronizar seus códigos diariamente!",
+                style: TextStyle(
+                  color: Colors.black45,
+                  fontSize: 20,
+                  //fontWeight: FontWeight.bold
+                ),
+              )
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   // SCAN BARCODE AND QRCODE FUNCTION
   Future _scanQR() async {
-    //await Permission.camera.request();
+
+    await Permission.camera.request();
+
     var barcode = await scanner.scan();
     if(barcode != null) {
       showDialog<String>(
@@ -207,8 +255,9 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProvider
   
 	@override
 	Widget build(BuildContext context) {
-  
+    
     List <Widget> carousselItens = <Widget>[
+      
       Text(
         'Bem Vindo',   
         textAlign: TextAlign.center,               
@@ -272,10 +321,10 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProvider
       )
     ];
 
-		return Scaffold(
-      
+    return Scaffold(
+
       resizeToAvoidBottomInset: false,
-			appBar: AppBar(
+      appBar: AppBar(
         backgroundColor: const Color(0xFF00049F),
         title: const Text(
           'CONTAGEM DE PRODUTOS',
@@ -284,7 +333,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProvider
         ),
       ),
 
-		  body:
+      body:
 
       Container(
         height: MediaQuery.of(context).size.height,
@@ -1062,6 +1111,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProvider
           ],
         ),
       ),
-		);
+    );
 	}
 }

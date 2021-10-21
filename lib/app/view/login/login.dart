@@ -40,6 +40,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProvider
   late AnimationController controller;
   bool isValidEmail = false;
   bool isValidPass = false;
+  bool passwordVisible = false;
 
   void _handleLoad(bool _load) {
     setState(() {
@@ -186,7 +187,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProvider
                     
                     //CONTROLER PASS USER
                     controller: myControllerPass,
-                    obscureText: true,
+                    obscureText: !passwordVisible,
 
                     decoration: InputDecoration(
 
@@ -195,6 +196,21 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProvider
                       prefixIcon: const Icon(
                         Icons.vpn_key,
                         color: Color(0xFFD7D9D9),
+                      ),
+                      
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          passwordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                          color: passwordVisible
+                          ? const Color(0xFF00049F)
+                          : const Color(0xFFD7D9D9)
+                        ), onPressed: () {
+                            setState(() {
+                              passwordVisible = !passwordVisible;
+                            }); 
+                          },
                       ),
 
                       labelText: 'Senha',
@@ -233,14 +249,23 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProvider
 
                           insert(myController.text).then((value) => null),
 
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const Home(),
-                            ),
-                          ),
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //     builder: (context) => const Home(),
+                          //   ),
+                          // ),
 
-                          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)=>Home()),(Route<dynamic> route) => false),
+                          // Navigator.of(context)
+                          //   .pushReplacementNamed('/home'),
+                            
+                          //Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)=>const FormLogin()),(Route<dynamic> route) => false),
+                          //Navigator.pushNamedAndRemoveUntil(context, "home", (Route<dynamic> route) => false),                        
+                          Navigator.pushAndRemoveUntil(
+                            context,   
+                            MaterialPageRoute(builder: (BuildContext context) => const Home()), 
+                            ModalRoute.withName('login')
+                          ),
 
                           _handleLoad(false),
 
