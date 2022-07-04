@@ -63,7 +63,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProvider
 
     foos.asMap().forEach((i, value) {
       itemsTemp.add(value.barcode);
-      //print('index=$i, value=$value');
     });
 
     setState(() {
@@ -109,15 +108,33 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProvider
   }
 
   Future popUp(BuildContext context) async {
-    
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
+
+        actions: <Widget>[
+          TextButton(
+            child: const Text(
+              'Fechar',
+
+              style: TextStyle(
+                color: Color(0xFF00049F),
+                fontSize: 14,
+                fontWeight: FontWeight.bold
+              ),
+
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+
         scrollable: true,
-        insetPadding: const EdgeInsets.symmetric(
-          horizontal: 20.0,
-          vertical: 150.0,
-        ),
+        // insetPadding: const EdgeInsets.symmetric(
+        //   horizontal: 20.0,
+        //   vertical: 150.0,
+        // ),
             
         content:
 
@@ -125,7 +142,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProvider
 
           children: [
 
-            Image.asset("assets/images/caution.png", height: 70),
+            //Image.asset("assets/images/caution.png", height: 70),
 
             Container(
               margin: const EdgeInsets.only(top: 20, bottom: 20),
@@ -137,8 +154,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProvider
                 "Não se esqueça de sincronizar seus códigos diariamente!",
                 style: TextStyle(
                   color: Colors.black45,
-                  fontSize: 20,
-                  //fontWeight: FontWeight.bold
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold
                 ),
               )
             ),
@@ -155,107 +172,70 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProvider
 
     var barcode = await scanner.scan();
     if(barcode != null) {
-      showDialog<String>(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-          scrollable: true,
-          insetPadding: const EdgeInsets.symmetric(
-            horizontal: 20.0,
-            vertical: 150.0,
-          ),
-              
-          content:
 
-          Column(
+      if(barcode.length == 42) {
+        insert(barcode);
+      }else {
+        showDialog<String>(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
 
-            children: [
+            scrollable: true,
+            insetPadding: const EdgeInsets.symmetric(
+              horizontal: 20.0,
+              vertical: 150.0,
+            ),
+                
+            content:
 
-              Container(
-                margin: const EdgeInsets.only(top: 20, bottom: 20),
-                width: MediaQuery.of(context).size.width,
+            Column(
 
-                child:
+              children: [
 
-                const Text(
-                  "Verifique o código abaixo:",
-                  style: TextStyle(
-                    color: Colors.black45,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold
-                  ),
-                ) 
-              ),
-
-              Container(
-                margin: const EdgeInsets.only(top: 20, bottom: 20),
-                width: MediaQuery.of(context).size.width,
-
-                child:
-
-                Text(
-                  barcode,
-                  style: const TextStyle(
-                    color: Colors.black45,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold
-                  ),
-                )
-              ),
-
-              Align(
-              alignment: Alignment.bottomRight,
-
-              child: 
-
-                GestureDetector(
-                  onTap: () {
-                    // CALL insert()
-                    insert(barcode);
-                    Navigator.of(context).pop();               
-                  },
+                Container(
+                  margin: const EdgeInsets.only(top: 20, bottom: 20),
+                  width: MediaQuery.of(context).size.width,
 
                   child:
 
-                  Container(
-                    alignment: Alignment.center,
-                    margin: const EdgeInsets.only(top: 20, bottom: 10),
-                    height: 45,
-                    width: 95,
-
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF00049F),                                                    
-                      borderRadius: BorderRadius.circular(10.0),
-
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.grey,
-                          offset: Offset(0.0, 1.0), //(x,y)
-                          blurRadius: 6.0,
-                        ),
-                      ],
+                  const Text(
+                    "Código inválido! Escaneie novamente.",
+                    style: TextStyle(
+                      color: Colors.black45,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold
                     ),
-
-                    child:
-
-                    const Text(
-                      "Adicionar",
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                    ),
-                  ),
+                  ) 
                 ),
-              )
-            ],
+
+                Container(
+                  margin: const EdgeInsets.only(top: 20, bottom: 20),
+                  width: MediaQuery.of(context).size.width,
+
+                  child:
+
+                  Text(
+                    barcode,
+                    style: const TextStyle(
+                      color: Colors.red,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold
+                    ),
+                  )
+                ),
+              ],
+            ),
           ),
-        ),
-      );
+        );
+      }
     }else {
       
     }
   }
-  
+
 	@override
 	Widget build(BuildContext context) {
-    
+
     List <Widget> carousselItens = <Widget>[
       
       Text(
@@ -524,71 +504,91 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProvider
                           Syncup syncup = Syncup();
 
                           await syncup.sendData().then((isSuccess) =>  {
+                            
                             setState(() {
                               requestSync = false;
+                            }),
 
-                              showDialog<String>(
-                                context: context,
-                                builder: (BuildContext context) => AlertDialog(
-                                  scrollable: true,
-                                  insetPadding: const EdgeInsets.symmetric(
-                                    horizontal: 20.0,
-                                    vertical: 150.0,
-                                  ),
-                                      
-                                  content:
+                            showDialog<String>(
+                              context: context,
+                              builder: (BuildContext context) => AlertDialog(
 
-                                  Column(
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: const Text(
+                                      'Fechar',
 
-                                    children: [
-
-                                      Container(
-                                        margin: const EdgeInsets.only(top: 20, bottom: 20),
-                                        width: MediaQuery.of(context).size.width,
-
-                                        child:
-
-                                        Center (
-                                          child: isSuccess ?
-                                          const Text(
-                                            "Sincronizado com a base de dados!",
-                                            style: TextStyle(
-                                              color: Colors.black45,
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold
-                                            ),
-                                          ) 
-                                          :
-                                          const Text(
-                                            "Não foi possível sincronizar!",
-                                            style: TextStyle(
-                                              color: Colors.black45,
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold
-                                            ),
-                                          ) 
-                                        )
+                                      style: TextStyle(
+                                        color: Color(0xFF00049F),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold
                                       ),
 
-                                      Container(
-                                        margin: const EdgeInsets.only(top: 5, bottom: 5),
-                                        width: MediaQuery.of(context).size.width,
-
-                                        child:
-
-                                        Center (
-                                          child: isSuccess ?
-                                            Image.asset("assets/images/success.png", height: 70)
-                                            :
-                                            Image.asset("assets/images/error.png", height: 70)
-
-                                        )
-                                      ),
-                                    ],
+                                    ),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
                                   ),
+                                ],
+
+                                scrollable: true,
+                                // insetPadding: const EdgeInsets.symmetric(
+                                //   horizontal: 20.0,
+                                //   vertical: 150.0,
+                                // ),
+
+                                content:
+
+                                Column(
+
+                                  children: [
+
+                                    Container(
+                                      margin: const EdgeInsets.only(top: 20, bottom: 0.0),
+                                      width: MediaQuery.of(context).size.width,
+
+                                      child:
+
+                                      Center (
+                                        child: isSuccess ?
+                                        const Text(
+                                          "Sincronizado com a base de dados!",
+                                          style: TextStyle(
+                                            color: Colors.black45,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold
+                                          ),
+                                        ) 
+                                        :
+                                        const Text(
+                                          "Não foi possível sincronizar!",
+                                          style: TextStyle(
+                                            color: Colors.black45,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold
+                                          ),
+                                        ) 
+                                      )
+                                    ),
+
+                                    // Container(
+                                    //   margin: const EdgeInsets.only(top: 5, bottom: 5),
+                                    //   width: MediaQuery.of(context).size.width,
+
+                                    //   child:
+
+                                    //   Center (
+                                    //     child: isSuccess ?
+                                    //       Image.asset("assets/images/success.png", height: 70)
+                                    //       :
+                                    //       Image.asset("assets/images/error.png", height: 70)
+
+                                    //   )
+                                    // ),
+                                  ],
                                 ),
-                              );
-                            })
+                              ),
+                            ),
                           });
                         },
 
@@ -621,6 +621,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProvider
                         onPressed: () async {
                           // CALL _scanQR FUNCTION
                           await _scanQR();
+
                         },
                         
                         // showDialog<String>(

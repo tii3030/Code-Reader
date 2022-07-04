@@ -71,332 +71,345 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> with TickerProvider
 
 	@override
 	Widget build(BuildContext context) {
-
+  
 		return Scaffold(
 
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
 
 			body:
 
-      SingleChildScrollView(
+      Container(
+        height: MediaQuery.of(context).size.height,
+        decoration: const BoxDecoration(
+
+          gradient: LinearGradient(
+            colors: <Color>[
+              Color(0xFF00049F),
+              Color(0xff004CFF)
+            ], 
+                            
+            begin: Alignment.centerLeft, end: Alignment.centerRight
+          ),
+
+        ),
 
         child: 
 
-        Container(
+        Container (
           height: MediaQuery.of(context).size.height,
-          decoration:const BoxDecoration(
+          padding: const EdgeInsets.all(10.0),
+          margin:  const EdgeInsets.all(10.0),
 
-            gradient: LinearGradient(
-              colors: <Color>[
-                Color(0xFF00049F),
-                Color(0xff004CFF)
-              ], 
-                              
-              begin: Alignment.centerLeft, end: Alignment.centerRight
-            ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10.0),
+            color: Colors.white,
+            border: Border.all(style: BorderStyle.none),
+
+            boxShadow: const [
+              BoxShadow(
+                offset: Offset(1, 10),
+                blurRadius: 200.5,
+                spreadRadius: 0.5,
+                color: Color(0xFF000000)
+              )
+            ],
           ),
 
           child:
 
-          Container (
-            height: MediaQuery.of(context).size.height,
-            padding: const EdgeInsets.all(10.0),
-            margin:  const EdgeInsets.all(10.0),
+          Center(
 
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10.0),
-              color: Colors.white,
-              border: Border.all(style: BorderStyle.none),
+            child: 
 
-              boxShadow: const [
-                BoxShadow(
-                  offset: Offset(1, 10),
-                  blurRadius: 200.5,
-                  spreadRadius: 0.5,
-                  color: Color(0xFF000000)
-                )
-              ],
-            ),
+            SingleChildScrollView(
 
-            child:
+              child:
 
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-                          
-              children: [
+              Column(
 
-                Container(
-                  margin: const EdgeInsets.only(bottom: 70),
-                  child: Image.asset("assets/images/12.png"),
-                  height: 140,
-                  width: MediaQuery.of(context).copyWith().size.width,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,    
 
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(style: BorderStyle.none),
-                  ),
-                ),
+                children: [
 
-                Container(
-                  padding: const EdgeInsets.only(left: 10, right: 10),
-                  child:
-
-                  TextFormField(
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter some text';
-                      }
-                      return null;
-                    },
-
-                    //CONTROLER CODE USER
-                    controller: myController,
-                    obscureText: false,
-                    decoration: InputDecoration(
-
-                      errorText: isValidEmail ? 'Código inválido' : null,
-
-                      prefixIcon: const Icon(
-                        Icons.email,
-                        color: Color(0xFFD7D9D9),
-
-                      ),
-
-                      labelText: 'Código',
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(width: 1, color: Color(0xFFD7D9D9),),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(width: 2, color: Color(0xFF00049F)),
-                        borderRadius: BorderRadius.circular(15),
-                      )
-                    ),
-                  ),
-                ),  
-
-                const SizedBox(height: 16,),
-
-                Container(
-                  padding: const EdgeInsets.only(left: 10, right: 10),
-
-                  child:
-                  
-                  TextFormField(
-                    
-                    //CONTROLER PASS USER
-                    controller: myControllerPass,
-                    obscureText: !passwordVisible,
-
-                    decoration: InputDecoration(
-
-                      errorText: isValidPass ? 'Senha inválida' : null,
-
-                      prefixIcon: const Icon(
-                        Icons.vpn_key,
-                        color: Color(0xFFD7D9D9),
-                      ),
-                      
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          passwordVisible
-                          ? Icons.visibility
-                          : Icons.visibility_off,
-                          color: passwordVisible
-                          ? const Color(0xFF00049F)
-                          : const Color(0xFFD7D9D9)
-                        ), onPressed: () {
-                            setState(() {
-                              passwordVisible = !passwordVisible;
-                            }); 
-                          },
-                      ),
-
-                      labelText: 'Senha',
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(width: 1, color: Color(0xFFD7D9D9)),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(width: 2, color: Color(0xFF00049F)),
-                        borderRadius: BorderRadius.circular(15),
-                      )
-                    ),
-                  ),
-                ),
-
-                GestureDetector(
-                  onTap: () async {
-
-                    if((myController.text).isEmpty) {
-                      _handleEmailValid(true);
-                    }
-
-                    if((myControllerPass.text).isEmpty) {
-                      _handlePassValid(true);
-                    }
-                    
-                    if(((myController.text).isNotEmpty) && ((myControllerPass.text).isNotEmpty)) {
-
-                      _handleLoad(true);
-
-                      LoginApi loginApi = LoginApi(myController.text, myControllerPass.text);
-                      loginApi.loginApi().then((authenticated) =>  {
-                        
-                        if(authenticated == true) {
-
-                          insert(myController.text).then((value) => null),
-
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //     builder: (context) => const Home(),
-                          //   ),
-                          // ),
-
-                          // Navigator.of(context)
-                          //   .pushReplacementNamed('/home'),
-                            
-                          //Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)=>const FormLogin()),(Route<dynamic> route) => false),
-                          //Navigator.pushNamedAndRemoveUntil(context, "home", (Route<dynamic> route) => false),                        
-                          Navigator.pushAndRemoveUntil(
-                            context,   
-                            MaterialPageRoute(builder: (BuildContext context) => const Home()), 
-                            ModalRoute.withName('login')
-                          ),
-
-                          _handleLoad(false),
-
-                        } else {
-                          _handleLoad(false),
-                          _handleEmailValid(true),
-                          _handlePassValid(true),
-                        }
-
-                      });
-                    }
-                    
-                  },
-
-                  child:
-                        
                   Container(
-                    alignment: Alignment.center,
-                    margin: const EdgeInsets.only(top: 30, left: 10, right: 10),
-                    padding: const EdgeInsets.only(left: 20, right: 20),
-                    height: 50,
+                    margin: const EdgeInsets.only(bottom: 70),
+                    child: Image.asset("assets/images/12.png"),
+                    height: 140,
+                    width: MediaQuery.of(context).copyWith().size.width,
 
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: <Color>[
-                          Color(0xFF00049F),
-                          Color(0xff0038FF)
-                        ], 
-                              
-                        begin: Alignment.centerLeft, end: Alignment.centerRight
-                      ),
-
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.grey,
-                          offset: Offset(0.0, 1.0), //(x,y)
-                          blurRadius: 6.0,
-                        ),
-                      ],
-                                        
-                      borderRadius: BorderRadius.circular(15.0),
+                      color: Colors.white,
+                      border: Border.all(style: BorderStyle.none),
                     ),
+                  ),
 
+                  Container(
+                    padding: const EdgeInsets.only(left: 10, right: 10),
                     child:
 
-                    Column(
+                    TextFormField(
+                      
+                      //ONLY NUMBER
+                      keyboardType: TextInputType.number,
+                      maxLength: 5,
 
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter some text';
+                        }
+                        return null;
+                      },
 
-                      children: <Widget>[
+                      //CONTROLER CODE USER
+                      controller: myController,
+                      obscureText: false,
+                      decoration: InputDecoration(
 
-                        AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 500),
-                          child: load ? 
+                        errorText: isValidEmail ? 'Código inválido' : null,
 
-                          const SizedBox(
-                            height: 30,
-                            width: 30,
-                            child: Center(
-                              child: 
-                              
-                              CircularProgressIndicator(
-                                color: Colors.white,
-                                valueColor: AlwaysStoppedAnimation(Colors.white),
-                                strokeWidth: 3.0
-                              )
-                            ),
-                          )
-                            
-                          :
-
-                          const Text(
-                            "LOGIN",
-                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                          ),
+                        prefixIcon: const Icon(
+                          Icons.email,
+                          color: Color(0xFFD7D9D9),
 
                         ),
 
-                      ],
-                    )
-                          
-                  ),
-                ),
+                        labelText: 'Código',
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(width: 1, color: Color(0xFFD7D9D9),),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
 
-                // BUTTON TO IMPLEMENTATION FINGERPRINT
-                // GestureDetector(
-                //   onTap: () async {
-                //     bool isAuthenticated = await Authentication.authenticateWithBiometrics();
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(width: 2, color: Color(0xFF00049F)),
+                          borderRadius: BorderRadius.circular(15),
+                        )
+                      ),
+                    ),
+                  ),  
 
-                //     if (isAuthenticated) {
+                  const SizedBox(height: 16,),
 
-                //     } else {
+                  Container(
+                    padding: const EdgeInsets.only(left: 10, right: 10),
 
-                //     }
-    
-                //   },
+                    child:
+                    
+                    TextFormField(
+                      
+                      //CONTROLER PASS USER
+                      controller: myControllerPass,
+                      obscureText: !passwordVisible,
 
-                //   child:
+                      decoration: InputDecoration(
+
+                        errorText: isValidPass ? 'Senha inválida' : null,
+
+                        prefixIcon: const Icon(
+                          Icons.vpn_key,
+                          color: Color(0xFFD7D9D9),
+                        ),
                         
-                //   Container(
-                //     alignment: Alignment.center,
-                //     margin: const EdgeInsets.only(top: 30, left: 10, right: 10),
-                //     padding: const EdgeInsets.only(left: 20, right: 20),
-                //     height: 50,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            passwordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                            color: passwordVisible
+                            ? const Color(0xFF00049F)
+                            : const Color(0xFFD7D9D9)
+                          ), onPressed: () {
+                              setState(() {
+                                passwordVisible = !passwordVisible;
+                              }); 
+                            },
+                        ),
 
-                //     decoration: BoxDecoration(
-                //       gradient: const LinearGradient(
-                //         colors: <Color>[
-                //           Color(0xFF00049F),
-                //           Color(0xff0038FF)
-                //         ], 
-                              
-                //         begin: Alignment.centerLeft, end: Alignment.centerRight
-                //       ),
-                                        
-                //       borderRadius: BorderRadius.circular(15.0),
+                        labelText: 'Senha',
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(width: 1, color: Color(0xFFD7D9D9)),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
 
-                //     ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(width: 2, color: Color(0xFF00049F)),
+                          borderRadius: BorderRadius.circular(15),
+                        )
+                      ),
+                    ),
+                  ),
 
-                //     child:
+                  GestureDetector(
+                    onTap: () async {
+
+                      if((myController.text).isEmpty) {
+                        _handleEmailValid(true);
+                      }
+
+                      if((myControllerPass.text).isEmpty) {
+                        _handlePassValid(true);
+                      }
+                      
+                      if(((myController.text).isNotEmpty) && ((myControllerPass.text).isNotEmpty)) {
+
+                        _handleLoad(true);
+
+                        LoginApi loginApi = LoginApi(myController.text, myControllerPass.text);
+                        loginApi.loginApi().then((authenticated) =>  {
                           
-                //     const Text(
-                //       "FINGER PRINT",
-                //       style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                //     ),
-                //   ),
-                // ),
-              ],
+                          if(authenticated == true) {
+
+                            insert(myController.text).then((value) => null),
+
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //     builder: (context) => const Home(),
+                            //   ),
+                            // ),
+
+                            // Navigator.of(context)
+                            //   .pushReplacementNamed('/home'),
+                              
+                            //Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)=>const FormLogin()),(Route<dynamic> route) => false),
+                            //Navigator.pushNamedAndRemoveUntil(context, "home", (Route<dynamic> route) => false),                        
+                            Navigator.pushAndRemoveUntil(
+                              context,   
+                              MaterialPageRoute(builder: (BuildContext context) => const Home()), 
+                              ModalRoute.withName('login')
+                            ),
+
+                            _handleLoad(false),
+
+                          } else {
+                            _handleLoad(false),
+                            _handleEmailValid(true),
+                            _handlePassValid(true),
+                          }
+
+                        });
+                      }
+                      
+                    },
+
+                    child:
+                          
+                    Container(
+                      alignment: Alignment.center,
+                      margin: const EdgeInsets.only(top: 30, left: 10, right: 10),
+                      padding: const EdgeInsets.only(left: 20, right: 20),
+                      height: 50,
+
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: <Color>[
+                            Color(0xFF00049F),
+                            Color(0xff0038FF)
+                          ], 
+                                
+                          begin: Alignment.centerLeft, end: Alignment.centerRight
+                        ),
+
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.grey,
+                            offset: Offset(0.0, 1.0), //(x,y)
+                            blurRadius: 6.0,
+                          ),
+                        ],
+                                          
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+
+                      child:
+
+                      Column(
+
+                        mainAxisAlignment: MainAxisAlignment.center,
+
+                        children: <Widget>[
+
+                          AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 500),
+                            child: load ? 
+
+                            const SizedBox(
+                              height: 30,
+                              width: 30,
+                              child: Center(
+                                child: 
+                                
+                                CircularProgressIndicator(
+                                  color: Colors.white,
+                                  valueColor: AlwaysStoppedAnimation(Colors.white),
+                                  strokeWidth: 3.0
+                                )
+                              ),
+                            )
+                              
+                            :
+
+                            const Text(
+                              "LOGIN",
+                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                            ),
+
+                          ),
+
+                        ],
+                      )
+                            
+                    ),
+                  ),
+
+                  // BUTTON TO IMPLEMENTATION FINGERPRINT
+                  // GestureDetector(
+                  //   onTap: () async {
+                  //     bool isAuthenticated = await Authentication.authenticateWithBiometrics();
+
+                  //     if (isAuthenticated) {
+
+                  //     } else {
+
+                  //     }
+      
+                  //   },
+
+                  //   child:
+                          
+                  //   Container(
+                  //     alignment: Alignment.center,
+                  //     margin: const EdgeInsets.only(top: 30, left: 10, right: 10),
+                  //     padding: const EdgeInsets.only(left: 20, right: 20),
+                  //     height: 50,
+
+                  //     decoration: BoxDecoration(
+                  //       gradient: const LinearGradient(
+                  //         colors: <Color>[
+                  //           Color(0xFF00049F),
+                  //           Color(0xff0038FF)
+                  //         ], 
+                                
+                  //         begin: Alignment.centerLeft, end: Alignment.centerRight
+                  //       ),
+                                          
+                  //       borderRadius: BorderRadius.circular(15.0),
+
+                  //     ),
+
+                  //     child:
+                            
+                  //     const Text(
+                  //       "FINGER PRINT",
+                  //       style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  //     ),
+                  //   ),
+                  // ),
+                ],
+              )
             )
           )
-        ),
+        )
       )
 		);
 	}

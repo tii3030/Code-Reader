@@ -81,7 +81,7 @@ class DaoHome {
     try{
 
       var dbs = await _getDatabase();
-      dbs.execute("DELETE FROM " + TABLE_NAME);
+      await dbs.execute("DELETE FROM " + TABLE_NAME);
 
     } catch(error){
       throw Exception('DbBase.cleanDatabase: ' + error.toString());

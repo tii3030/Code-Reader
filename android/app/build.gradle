@@ -54,6 +54,13 @@ android {
         targetSdkVersion 30
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+
+        externalNativeBuild {
+            cmake {
+                cppFlags "-std=c++17"
+                abiFilters 'x86', 'armeabi-v7a', 'x86_64'
+            }
+        }
     }
 
     signingConfigs {
@@ -68,6 +75,15 @@ android {
     buildTypes {
         release {
             signingConfig signingConfigs.release
+        }
+    }
+
+    splits {
+        abi {
+            enable true
+            reset()
+            include defaultConfig.externalNativeBuild.getCmake().getAbiFilters().toListString()
+            universalApk true
         }
     }
 }
